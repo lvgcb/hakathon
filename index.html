@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Карта Алматы со слоями</title>
+
+  <!-- Подключаем CSS для Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 600px; /* Высота карты */
+      width: 100%;   /* Ширина карты */
+    }
+    body {
+      font-family: Arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <h1>Карта Алматы со слоями</h1>
+
+  <!-- Элемент для карты -->
+  <div id="map"></div>
+
+  <!-- Подключаем JS для Leaflet -->
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script>
+    // Инициализация карты и установка вида на Алматы
+    var map = L.map('map').setView([43.238949, 76.889709], 13); // Координаты Алматы
+
+    // Базовые слои (разные варианты карт)
+    var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    });
+
+    var satelliteLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+      attribution: 'Карта Google',
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    });
+
+    var hybridLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+      attribution: 'Гибрид Google',
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    });
+
+    osmLayer.addTo(map); // По умолчанию добавляем OpenStreetMap
+
+    // Дополнительные слои
+    var marker = L.marker([43.238949, 76.889709]).bindPopup('<b>Алматы</b><br>Центр города');
+    var circle = L.circle([43.238, 76.89], {
+      color: 'red',
+      fillColor: '#f03',
+      fillOpacity: 0.5,
+      radius: 500
+    }).bindPopup("Район около Алматы");
+
+    var polygon = L.polygon([
+      [43.24, 76.88],
+      [43.23, 76.89],
+      [43.24, 76.91]
+    ]).bindPopup("Треугольный полигон");
+
+    // Группы слоев
+    var baseLayers = {
+      "OpenStreetMap": osmLayer,
+      "Спутник": satelliteLayer,
+      "Гибрид": hybridLayer
+    };
+
+    var overlayLayers = {
+      "Маркер": marker,
+      "Круг": circle,
+      "Полигон": polygon
+    };
+
+    // Добавляем контрол для переключения слоев
+    L.control.layers(baseLayers, overlayLayers).addTo(map);
+
+    // Добавляем все дополнительные слои по умолчанию на карту
+    marker.addTo(map);
+    circle.addTo(map);
+    polygon.addTo(map);
+  </script>
+</body>
+</html>
